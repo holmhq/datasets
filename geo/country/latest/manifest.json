@@ -1,0 +1,23 @@
+{
+  "generated_at_utc": "2026-02-16T19:16:24Z",
+  "dataset": "ip2country",
+  "format": "tsv.gz",
+  "source": {
+    "provider": "IPtoASN",
+    "license": "PDDL v1.0",
+    "upstream_v4": "https://iptoasn.com/data/ip2country-v4.tsv.gz",
+    "upstream_v6": "https://iptoasn.com/data/ip2country-v6.tsv.gz"
+  },
+  "artifacts": {
+    "v4": {
+      "file": "geo/country/latest/ip2country-v4.tsv.gz",
+      "sha256": "d4fd96c6448c52792cbba09eab46e66dfe8db41b1751f0aee4d825e32f49a778",
+      "bytes": 3033587
+    },
+    "v6": {
+      "file": "geo/country/latest/ip2country-v6.tsv.gz",
+      "sha256": "95ab302224e1006d41f287151bf4a969d3e48d4b96c24827e85613ce265f97fa",
+      "bytes": 1078315
+    }
+  }
+}
