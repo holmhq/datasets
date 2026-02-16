@@ -1,0 +1,75 @@
+name: Sync Geo Country Dataset
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 1 * *"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download latest files
+        run: |
+          set -euo pipefail
+          mkdir -p geo/country/latest
+          curl -fsSL https://iptoasn.com/data/ip2country-v4.tsv.gz -o geo/country/latest/ip2country-v4.tsv.gz
+          curl -fsSL https://iptoasn.com/data/ip2country-v6.tsv.gz -o geo/country/latest/ip2country-v6.tsv.gz
+          gzip -t geo/country/latest/ip2country-v4.tsv.gz
+          gzip -t geo/country/latest/ip2country-v6.tsv.gz
+
+      - name: Build manifest
+        run: |
+          set -euo pipefail
+          v4=geo/country/latest/ip2country-v4.tsv.gz
+          v6=geo/country/latest/ip2country-v6.tsv.gz
+          v4_sha=$(sha256sum "$v4" | awk '{print $1}')
+          v6_sha=$(sha256sum "$v6" | awk '{print $1}')
+          v4_bytes=$(wc -c < "$v4" | tr -d ' ')
+          v6_bytes=$(wc -c < "$v6" | tr -d ' ')
+          gen=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          jq -n \
+            --arg generated_at_utc "$gen" \
+            --arg source_v4 "https://iptoasn.com/data/ip2country-v4.tsv.gz" \
+            --arg source_v6 "https://iptoasn.com/data/ip2country-v6.tsv.gz" \
+            --arg v4_file "geo/country/latest/ip2country-v4.tsv.gz" \
+            --arg v6_file "geo/country/latest/ip2country-v6.tsv.gz" \
+            --arg v4_sha256 "$v4_sha" \
+            --arg v6_sha256 "$v6_sha" \
+            --argjson v4_bytes "$v4_bytes" \
+            --argjson v6_bytes "$v6_bytes" \
+            '{
+              generated_at_utc: $generated_at_utc,
+              dataset: "ip2country",
+              format: "tsv.gz",
+              source: {
+                provider: "IPtoASN",
+                license: "PDDL v1.0",
+                upstream_v4: $source_v4,
+                upstream_v6: $source_v6
+              },
+              artifacts: {
+                v4: { file: $v4_file, sha256: $v4_sha256, bytes: $v4_bytes },
+                v6: { file: $v6_file, sha256: $v6_sha256, bytes: $v6_bytes }
+              }
+            }' > geo/country/latest/manifest.json
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No dataset changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add geo/country/latest
+          git commit -m "geo-country: refresh $(date -u +%F)"
+          git push
