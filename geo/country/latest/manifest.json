@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-01T09:49:21Z",
+  "generated_at_utc": "2026-11-01T10:08:44Z",
   "dataset": "ip2country",
   "format": "tsv.gz",
   "source": {
@@ -11,13 +11,13 @@
   "artifacts": {
     "v4": {
       "file": "geo/country/latest/ip2country-v4.tsv.gz",
-      "sha256": "defebcf49c45a4b4c453a3f34acf96daf5314a0de2b76ae87578ae957ceb48b4",
-      "bytes": 3170534
+      "sha256": "a62804468920101ee522fa6976d1ce851a7f8821c969c01c28a7ecda38e825f4",
+      "bytes": 3182682
     },
     "v6": {
       "file": "geo/country/latest/ip2country-v6.tsv.gz",
-      "sha256": "09c3cc9b5ff6d8e0a85a3d3849094c91e3c7730686a6790c79b676bc481831f4",
-      "bytes": 1146774
+      "sha256": "c3b377e526434dc2de8af27bc57849d16acaa80314c710821b4b6b0aa4225752",
+      "bytes": 1121461
     }
   }
 }
